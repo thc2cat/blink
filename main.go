@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/fatih/color"
@@ -23,6 +24,7 @@ func main() {
 		minlen, views int
 		patternsonly  bool
 		patterns      = make(map[string]int)
+		output        = make([]string, 0, 0)
 	)
 
 	// Parsing args
@@ -30,7 +32,6 @@ func main() {
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
-
 	flag.Parse()
 
 	// defining input
@@ -47,8 +48,6 @@ func main() {
 	}
 
 	// Reading input , putting all in []string
-	var output = make([]string, 0, 0)
-
 	for s.Scan() {
 		line := s.Text()
 		output = append(output, line)
@@ -160,5 +159,32 @@ func assignPatternColor(hash PairList, idxcolor []*color.Color) map[string]*colo
 	}
 	return m
 }
+
+// dealing with sorted output
+func rankByWordCount(wordFrequencies map[string]int) PairList {
+	pl := make(PairList, len(wordFrequencies))
+	i := 0
+	for k, v := range wordFrequencies {
+		pl[i] = Pair{k, v}
+		i++
+	}
+	sort.Sort(sort.Reverse(pl))
+	// sort.Sort(pl)
+
+	return pl
+}
+
+// Pair ...
+type Pair struct {
+	Key   string
+	Value int
+}
+
+// PairList ...
+type PairList []Pair
+
+func (p PairList) Len() int           { return len(p) }
+func (p PairList) Less(i, j int) bool { return len(p[i].Key) < len(p[j].Key) }
+func (p PairList) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
 
 // end of main.go
