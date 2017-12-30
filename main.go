@@ -1,9 +1,10 @@
 package main
 
 // from stdin, find most repetitive patterns and enlight them
-// v0.2 working on the first part of the string and only the longuest pattern.
-// ( wich of course will not work on very long lines )
-// of course with a lot of bugs.. so more testing needed.
+// v0.3 : multiple colors
+// v0.2 : find multiple patterns in one line
+// v0.1 : find only the longuest pattern within one line
+// of course with a lot of bugs.. so more testing/debugging is always needed.
 
 import (
 	"bufio"
@@ -15,25 +16,16 @@ import (
 	"github.com/fatih/color"
 )
 
-var (
-	minlen, views int
-	patternsonly  bool
-	input         string
-	patterns      = make(map[string]int)
-)
-
 func main() {
 
-	yellow := color.New(color.FgYellow).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
-	info := color.New(color.FgWhite, color.BgGreen).SprintFunc()
-	cyanunder := color.New(color.FgCyan).Add(color.Underline).SprintFunc()
-	redbold := color.New(color.FgRed).Add(color.Bold).SprintFunc()
-	fmt.Fprintf(color.Output,
-		"This is a %s and this is %s %s %s %s.\n",
-		yellow("warning"), red("error"), info("info"),
-		redbold("redbold"), cyanunder("underlined ?"))
+	var (
+		input         string
+		minlen, views int
+		patternsonly  bool
+		patterns      = make(map[string]int)
+	)
 
+	// Parsing args
 	flag.IntVar(&minlen, "l", 7, "min pattern length")
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
@@ -41,6 +33,7 @@ func main() {
 
 	flag.Parse()
 
+	// defining input
 	var s *bufio.Scanner
 	if input != "" {
 		f, err := os.Open(input)
@@ -53,19 +46,22 @@ func main() {
 		s = bufio.NewScanner(os.Stdin)
 	}
 
+	// Reading input , putting all in []string
 	var output = make([]string, 0, 0)
 
-	// Reading input
 	for s.Scan() {
 		line := s.Text()
 		output = append(output, line)
-		split(line)
+		split(minlen, line, patterns)
 	}
 
-	buildmap(patterns)
+	// trimming patterns
+	buildmap(views, patterns)
+	// replacing patterns map with hash ordered by length
+	hash := rankByWordCount(patterns)
 
+	// if we only want to see patterns
 	if patternsonly {
-		hash := rankByWordCount(patterns)
 		fmt.Printf(" #/len \t>Pattern by length<\n")
 		for _, v := range hash {
 			fmt.Printf("%2d/%2d \t>%s<\n", v.Value, len(v.Key), v.Key)
@@ -73,24 +69,28 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Attributing colors to patterns
+	idxcolors := initcolors()
+	keycolors := assignPatternColor(hash, idxcolors)
+
+	// printing input with color
 	for _, v := range output {
 		works := v
 		for len(works) > minlen {
 			idx, bestPLen, bestPIdx, bestP := 0, 0, 0, ""
 			// recherche de la chaine la plus longue
-			for k := range patterns {
-				//fmt.Printf("looking %s in %s\n", k, v)
-				if idx = strings.Index(works, k); (idx != -1) && (len(k) > bestPLen) {
-					bestP, bestPLen, bestPIdx = k, len(k), idx
-					//fmt.Printf("found new best %s in %s at idx %d\n", k, v, idx)
+			for _, k := range hash {
+				if idx = strings.Index(works, k.Key); (idx != -1) && ((idx < bestPIdx) || (len(k.Key) > bestPLen)) {
+					bestP, bestPLen, bestPIdx = k.Key, len(k.Key), idx
 				}
 			}
-			if bestPLen > 0 {
+
+			if bestPLen > 0 { // found a pattern
 				fmt.Fprintf(color.Output, "%s%s",
 					works[0:bestPIdx],
-					info(bestP))
+					keycolors[bestP].Sprintf(bestP))
 				works = works[bestPIdx+bestPLen:]
-			} else {
+			} else { // no more patterns
 				fmt.Fprintf(color.Output, "%s", works)
 				works = ""
 			}
@@ -105,7 +105,7 @@ func main() {
 } // fin main()
 
 // buildmap : trim duplicate values
-func buildmap(values map[string]int) {
+func buildmap(views int, values map[string]int) {
 	for k := range values { // fast loop first
 		if values[k] < views {
 			//fmt.Printf("deleting insufficient views k(%d)[%d] [%s] \n", values[k], len(k), k)
@@ -126,7 +126,7 @@ func buildmap(values map[string]int) {
 } // fin buildmap
 
 // split a string of minlen into a map[string]int
-func split(line string) {
+func split(minlen int, line string, patterns map[string]int) {
 	l := len(line)
 	if l < minlen {
 		return
@@ -138,3 +138,27 @@ func split(line string) {
 		}
 	}
 } // fin split
+
+// initcolors : initialize an array with a few colors
+func initcolors() []*color.Color {
+	var h []*color.Color
+	h = append(h, color.New(color.FgWhite, color.BgGreen))
+	h = append(h, color.New(color.FgBlack, color.BgYellow))
+	h = append(h, color.New(color.FgWhite, color.BgBlue))
+	h = append(h, color.New(color.FgBlack, color.BgCyan))
+	h = append(h, color.New(color.FgWhite, color.BgRed))
+	h = append(h, color.New(color.FgWhite, color.BgMagenta))
+	h = append(h, color.New(color.FgBlack, color.BgWhite))
+	return h
+}
+
+// assignPatternColor : try to associate != colors for * patternts
+func assignPatternColor(hash PairList, idxcolor []*color.Color) map[string]*color.Color {
+	m := make(map[string]*color.Color)
+	for i, p := range hash {
+		m[p.Key] = idxcolor[i%len(idxcolor)]
+	}
+	return m
+}
+
+// end of main.go
