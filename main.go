@@ -22,25 +22,34 @@ import (
 func main() {
 
 	var (
-		input         string
-		minlen, views int
-		patternsonly  bool
-		patterns      = make(map[string]int)
-		output        = make([]string, 0, 0)
+		input                     string
+		minlen, views             int
+		patternsonly, notimelimit bool
+		maxtimelimit              = 15 * time.Second
+		patterns                  = make(map[string]int)
+		output                    = make([]string, 0, 0)
 	)
 
-	go func() { // Don't wait forever if data is huge or complex.
-		time.Sleep(10 * time.Second)
-		fmt.Fprintf(os.Stderr, " Sorry, but timeout is set to 10s, please simplify your data and retry.\n")
-		os.Exit(1)
-	}()
 	// Parsing args
 	flag.IntVar(&minlen, "l", 7, "min pattern length")
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
+	flag.BoolVar(&notimelimit, "T", false, "no time limit")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
 	flag.Parse()
 
+	if !notimelimit {
+		go func() { // Don't wait forever if data is huge or complex.
+			time.Sleep(maxtimelimit)
+			error := color.New(color.BgRed, color.FgHiWhite).SprintFunc()
+			errormsg := fmt.Sprintf("Sorry, but timeout is set to %2.fs, please retry with simplified data.", maxtimelimit.Seconds())
+			fmt.Fprintf(color.Output, error(errormsg))
+			fmt.Printf("\n")
+			//	fmt.Fprintf(color.Output, color.("Sorry, but timeout is set to %2.fs, please simplify your data and retry.\n", maxtimelimit.Seconds()))
+
+			os.Exit(1)
+		}()
+	}
 	// defining input
 	var s *bufio.Scanner
 	if input != "" {
