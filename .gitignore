@@ -1,4 +1,6 @@
+*.tmp
 *.txt
 *.exe
 *.json
 blink
+debug

@@ -1,11 +1,12 @@
 package main
 
-// from stdin, find most repetitive patterns and enlight them
-// v0.31 : timeout
+// from stdin, find most repetitive patterns char by char and enlight them
+// v0.32 : timeout and colors error
 // v0.3 : multiple colors
 // v0.2 : find multiple patterns in one line
 // v0.1 : find only the longuest pattern within one line
 // of course with a lot of bugs.. so more testing/debugging is always needed.
+// ( Always check  Windows 10 : $Env:GOPATH )
 
 import (
 	"bufio"
