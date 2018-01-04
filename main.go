@@ -1,6 +1,7 @@
 package main
 
 // from stdin, find most repetitive patterns and enlight them
+// v0.31 : timeout
 // v0.3 : multiple colors
 // v0.2 : find multiple patterns in one line
 // v0.1 : find only the longuest pattern within one line
@@ -13,6 +14,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 )
@@ -27,6 +29,11 @@ func main() {
 		output        = make([]string, 0, 0)
 	)
 
+	go func() { // Don't wait forever if data is huge or complex.
+		time.Sleep(10 * time.Second)
+		fmt.Fprintf(os.Stderr, " Sorry, but timeout is set to 10s, please simplify your data and retry.\n")
+		os.Exit(1)
+	}()
 	// Parsing args
 	flag.IntVar(&minlen, "l", 7, "min pattern length")
 	flag.IntVar(&views, "o", 3, "min occurences")
