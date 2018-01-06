@@ -1,6 +1,7 @@
 package main
 
 // from stdin, find most repetitive patterns char by char and enlight them
+// v0.34 : without func for assigning colors, and a color struct for init
 // v0.32 : timeout and colors error
 // v0.3 : multiple colors
 // v0.2 : find multiple patterns in one line
@@ -46,8 +47,6 @@ func main() {
 			errormsg := fmt.Sprintf("Sorry, but timeout is set to %2.fs, please retry with simplified data.", maxtimelimit.Seconds())
 			fmt.Fprintf(color.Output, error(errormsg))
 			fmt.Printf("\n")
-			//	fmt.Fprintf(color.Output, color.("Sorry, but timeout is set to %2.fs, please simplify your data and retry.\n", maxtimelimit.Seconds()))
-
 			os.Exit(1)
 		}()
 	}
@@ -87,7 +86,11 @@ func main() {
 
 	// Attributing colors to patterns
 	idxcolors := initcolors()
-	keycolors := assignPatternColor(hash, idxcolors)
+
+	keycolors := make(map[string]*color.Color)
+	for i, p := range hash {
+		keycolors[p.Key] = idxcolors[i%len(idxcolors)]
+	}
 
 	// printing input with color
 	for _, v := range output {
@@ -158,23 +161,23 @@ func split(minlen int, line string, patterns map[string]int) {
 // initcolors : initialize an array with a few colors
 func initcolors() []*color.Color {
 	var h []*color.Color
-	h = append(h, color.New(color.FgWhite, color.BgGreen))
-	h = append(h, color.New(color.FgBlack, color.BgYellow))
-	h = append(h, color.New(color.FgWhite, color.BgBlue))
-	h = append(h, color.New(color.FgBlack, color.BgCyan))
-	h = append(h, color.New(color.FgWhite, color.BgRed))
-	h = append(h, color.New(color.FgWhite, color.BgMagenta))
-	h = append(h, color.New(color.FgBlack, color.BgWhite))
-	return h
-}
 
-// assignPatternColor : try to associate != colors for * patternts
-func assignPatternColor(hash PairList, idxcolor []*color.Color) map[string]*color.Color {
-	m := make(map[string]*color.Color)
-	for i, p := range hash {
-		m[p.Key] = idxcolor[i%len(idxcolor)]
+	var mycolors = []struct {
+		fg color.Attribute
+		bg color.Attribute
+	}{
+		{color.FgWhite, color.BgGreen},
+		{color.FgBlack, color.BgYellow},
+		{color.FgWhite, color.BgBlue},
+		{color.FgBlack, color.BgCyan},
+		{color.FgWhite, color.BgRed},
+		{color.FgWhite, color.BgMagenta},
 	}
-	return m
+
+	for _, v := range mycolors {
+		h = append(h, color.New(v.fg, v.bg))
+	}
+	return h
 }
 
 // dealing with sorted output
