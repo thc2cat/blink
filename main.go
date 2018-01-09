@@ -1,6 +1,7 @@
 package main
 
-// from stdin, find most repetitive patterns char by char and enlight them
+// from stdin, find most repetitive patterns enlight them
+// v0.35 : add -S to choose usual separators splitting
 // v0.34 : without func for assigning colors, and a color struct for init
 // v0.32 : timeout and colors error
 // v0.3 : multiple colors
@@ -24,12 +25,12 @@ import (
 func main() {
 
 	var (
-		input                     string
-		minlen, views             int
-		patternsonly, notimelimit bool
-		maxtimelimit              = 15 * time.Second
-		patterns                  = make(map[string]int)
-		output                    = make([]string, 0, 0)
+		input                                    string
+		minlen, views                            int
+		patternsonly, notimelimit, useseparators bool
+		maxtimelimit                             = 15 * time.Second
+		patterns                                 = make(map[string]int)
+		output                                   = make([]string, 0, 0)
 	)
 
 	// Parsing args
@@ -37,7 +38,9 @@ func main() {
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.BoolVar(&notimelimit, "T", false, "no time limit")
+	flag.BoolVar(&useseparators, "S", false, "use separators [space+\t,;/] faster")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
+
 	flag.Parse()
 
 	if !notimelimit {
@@ -67,7 +70,13 @@ func main() {
 	for s.Scan() {
 		line := s.Text()
 		output = append(output, line)
-		split(minlen, line, patterns)
+		if useseparators { // faster
+			splitusingseparators(minlen, line, patterns)
+
+		} else { // much longer char by chars
+			split(minlen, line, patterns)
+		}
+
 	}
 
 	// trimming patterns
@@ -144,6 +153,18 @@ func buildmap(views int, values map[string]int) {
 
 } // fin buildmap
 
+func separators(r rune) bool {
+	return r == ' ' || r == '	' || r == '/' || r == ',' || r == ';'
+}
+func splitusingseparators(minlen int, line string, patterns map[string]int) {
+	parts := strings.FieldsFunc(line, separators)
+	for i := range parts {
+		if len(parts[i]) >= minlen {
+			patterns[parts[i]]++
+		}
+	}
+}
+
 // split a string of minlen into a map[string]int
 func split(minlen int, line string, patterns map[string]int) {
 	l := len(line)
@@ -153,7 +174,7 @@ func split(minlen int, line string, patterns map[string]int) {
 	for j := 0; j <= l-minlen; j++ {
 		for i := j + minlen; i <= l; i++ {
 			patterns[line[j:i]]++
-			//fmt.Printf("split : i=%d j=%d  %s\t -> %d\n", i, j, line[j:i], occurences[line[j:i]])
+			//fmt.Printf("split : i=%d j=%d %s\t -> %d\n", i, j, line[j:i], occurences[line[j:i]])
 		}
 	}
 } // fin split
