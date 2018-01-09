@@ -133,7 +133,7 @@ func main() {
 		fmt.Fprintf(color.Output, "\n")
 	} // end loop output
 	os.Exit(0)
-} // fin main()
+} // end of main()
 
 // buildmap : trim duplicate values
 func buildmap(views int, values map[string]int) {
@@ -154,7 +154,7 @@ func buildmap(views int, values map[string]int) {
 		}
 	}
 
-} // fin buildmap
+} // end of buildmap
 
 // func separators(r rune) bool {
 // 	return r == ' ' || r == '	' || r == '/' || r == ',' || r == ';'
