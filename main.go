@@ -41,7 +41,7 @@ func main() {
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.BoolVar(&notimelimit, "T", false, "no time limit")
-	flag.StringVar(&sep, "S", "", "use these separators \"space+\t,;/\" ")
+	flag.StringVar(&sep, "S", "", "use separators \"space+\t,;/\" ")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
 
 	flag.Parse()
