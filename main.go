@@ -41,7 +41,7 @@ func main() {
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.BoolVar(&notimelimit, "T", false, "no time limit")
-	flag.StringVar(&sep, "S", "", "use separators \"space+\t,;/\" ")
+	flag.StringVar(&sep, "S", "", "use separators \"space+\t,;/\" [default char]")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
 
 	flag.Parse()
@@ -89,7 +89,7 @@ func main() {
 
 	// if we only want to see patterns
 	if patternsonly {
-		fmt.Printf(" #/len \t>Pattern by length<\n")
+		fmt.Printf(" #/len \t>Pattern by length (min len:%d #:%d)<\n", minlen, views)
 		for _, v := range hash {
 			fmt.Printf("%2d/%2d \t>%s<\n", v.Value, len(v.Key), v.Key)
 		}
@@ -205,7 +205,9 @@ func initcolors() []*color.Color {
 		{color.FgWhite, color.BgBlue},
 		{color.FgBlack, color.BgCyan},
 		{color.FgWhite, color.BgRed},
-		{color.FgWhite, color.BgMagenta},
+		{color.FgRed, color.BgWhite},
+		{color.FgBlue, color.BgWhite},
+		{color.FgYellow, color.BgBlue},
 	}
 
 	for _, v := range mycolors {
