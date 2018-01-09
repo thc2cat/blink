@@ -75,11 +75,9 @@ func main() {
 		output = append(output, line)
 		if sep != "" { // faster
 			splitusingseparators(minlen, line, patterns)
-
 		} else { // much longer char by chars
 			split(minlen, line, patterns)
 		}
-
 	}
 
 	// trimming patterns
@@ -161,7 +159,7 @@ func buildmap(views int, values map[string]int) {
 // }
 
 func separators(r rune) bool {
-	for _, v := range sep {
+	for _, v := range sep { // sep is a string containing separators
 		if r == rune(v) {
 			return true
 		}
@@ -170,6 +168,9 @@ func separators(r rune) bool {
 }
 
 func splitusingseparators(minlen int, line string, patterns map[string]int) {
+	if len(line) < minlen {
+		return
+	}
 	parts := strings.FieldsFunc(line, separators)
 	for i := range parts {
 		if len(parts[i]) >= minlen {
