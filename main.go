@@ -1,6 +1,7 @@
 package main
 
 // from stdin, find most repetitive patterns enlight them
+// v0.36 : change -S to specify separators
 // v0.35 : add -S to choose usual separators splitting
 // v0.34 : without func for assigning colors, and a color struct for init
 // v0.32 : timeout and colors error
@@ -22,15 +23,17 @@ import (
 	"github.com/fatih/color"
 )
 
+var sep string
+
 func main() {
 
 	var (
-		input                                    string
-		minlen, views                            int
-		patternsonly, notimelimit, useseparators bool
-		maxtimelimit                             = 15 * time.Second
-		patterns                                 = make(map[string]int)
-		output                                   = make([]string, 0, 0)
+		input                     string
+		minlen, views             int
+		patternsonly, notimelimit bool
+		maxtimelimit              = 15 * time.Second
+		patterns                  = make(map[string]int)
+		output                    = make([]string, 0, 0)
 	)
 
 	// Parsing args
@@ -38,7 +41,7 @@ func main() {
 	flag.IntVar(&views, "o", 3, "min occurences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.BoolVar(&notimelimit, "T", false, "no time limit")
-	flag.BoolVar(&useseparators, "S", false, "use separators [space+\t,;/] faster")
+	flag.StringVar(&sep, "S", "", "use these separators \"space+\t,;/\" ")
 	flag.StringVar(&input, "i", "", "input [default:sdtin]")
 
 	flag.Parse()
@@ -70,7 +73,7 @@ func main() {
 	for s.Scan() {
 		line := s.Text()
 		output = append(output, line)
-		if useseparators { // faster
+		if sep != "" { // faster
 			splitusingseparators(minlen, line, patterns)
 
 		} else { // much longer char by chars
@@ -153,9 +156,19 @@ func buildmap(views int, values map[string]int) {
 
 } // fin buildmap
 
+// func separators(r rune) bool {
+// 	return r == ' ' || r == '	' || r == '/' || r == ',' || r == ';'
+// }
+
 func separators(r rune) bool {
-	return r == ' ' || r == '	' || r == '/' || r == ',' || r == ';'
+	for _, v := range sep {
+		if r == rune(v) {
+			return true
+		}
+	}
+	return false
 }
+
 func splitusingseparators(minlen int, line string, patterns map[string]int) {
 	parts := strings.FieldsFunc(line, separators)
 	for i := range parts {
