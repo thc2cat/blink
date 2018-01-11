@@ -33,7 +33,7 @@ func main() {
 		patternsonly, notimelimit bool
 		maxtimelimit              = 15 * time.Second
 		patterns                  = make(map[string]int)
-		output                    = make([]string, 0, 0)
+		output                    = make([]string, 0)
 	)
 
 	// Parsing args

@@ -13,7 +13,7 @@ func TestSplit(t *testing.T) {
 	patterns := []string{"1234", "123", "234"}
 
 	for _, key := range patterns {
-		if v, ok := testpat[key]; v != 1 || ok != true {
+		if v, ok := testpat[key]; v != 1 || !ok {
 			log.Fatal("expected value 1234 found")
 		}
 	}
