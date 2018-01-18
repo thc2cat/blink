@@ -1,5 +1,6 @@
 
-# Blink
+# blink [![Build Status](https://img.shields.io/travis/thc2cat/blink.svg?style=flat-square)](https://travis-ci.org/thc2cat/blink)
+
 
 `blink` is a cli wich purpose is to find common patterns from stdin or a file, and print them in color, or just identify these patterns. The pattern extraction can be made from a list of separators, or caracters by caracters (very slow on long lines).
 
