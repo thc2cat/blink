@@ -26,7 +26,7 @@ func TestBuildmap(t *testing.T) {
 		"12345":   2, // should be kept =! 0123456 (2<3)
 		"0123456": 3, // should kept
 	}
-	buildmap(2, testmap) // Keep at least 2 occurences
+	buildmap(2, testmap) // Keep at least 2 occurrences
 	//func buildmap(views int, values map[string]int) {
 
 	patterns := map[string]bool{

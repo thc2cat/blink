@@ -38,7 +38,7 @@ func main() {
 
 	// Parsing args
 	flag.IntVar(&minlen, "l", 7, "min pattern length")
-	flag.IntVar(&views, "o", 3, "min occurences")
+	flag.IntVar(&views, "o", 3, "min occurrences")
 	flag.BoolVar(&patternsonly, "P", false, "only print found patterns")
 	flag.BoolVar(&notimelimit, "T", false, "no time limit")
 	flag.StringVar(&sep, "S", "", "use separators \"space+\t,;/\" [default char]")
@@ -188,10 +188,9 @@ func split(minlen int, line string, patterns map[string]int) {
 	for j := 0; j <= l-minlen; j++ {
 		for i := j + minlen; i <= l; i++ {
 			patterns[line[j:i]]++
-			//fmt.Printf("split : i=%d j=%d %s\t -> %d\n", i, j, line[j:i], occurences[line[j:i]])
 		}
 	}
-} // fin split
+}
 
 // initcolors : initialize an array with a few colors
 func initcolors() []*color.Color {
