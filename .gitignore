@@ -1,6 +1,5 @@
-*.tmp
-*.txt
-*.exe
-*.json
 blink
 debug
+tests/*
+vendor/*
+.vscode/
