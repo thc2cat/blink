@@ -30,6 +30,8 @@ github.com/fatih/color is mandatory
 
 ```
 go get github.com/fatih/color
+or
+dep ensure -update
 ```
 
 ### Installing
