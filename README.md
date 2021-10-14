@@ -1,14 +1,13 @@
 
 # blink [![Build Status](https://img.shields.io/travis/thc2cat/blink.svg?style=flat-square)](https://travis-ci.org/thc2cat/blink)
 
-
-`blink` is a cli wich purpose is to find common patterns from stdin or a file, and print them in color, or just identify these patterns. The pattern extraction can be made from a list of separators, or caracters by caracters (very slow on long lines).
+`blink` is a cli which purpose is to find common patterns from stdin or a file, and print them in color, or just identify these patterns. The pattern extraction can be made from a list of separators, or character by character (very slow on long lines).
 
 ## Getting Started
 
 `blink` is using standard flags from golang :
 
-```
+```shell
   -P    only print found patterns
   -S string
         use separators "space+  ,;/" [default char]
@@ -18,7 +17,7 @@
   -l int
         min pattern length (default 7)
   -o int
-        min occurences (default 3)
+        min occurrences (default 3)
 ```
 
 ![Blink](blink.png)
@@ -28,7 +27,7 @@
 `blink` is written in golang, so building will requisite you to install golang.
 github.com/fatih/color is mandatory
 
-```
+```shell
 go get github.com/fatih/color
 or
 dep ensure -update
@@ -36,7 +35,7 @@ dep ensure -update
 
 ### Installing
 
-```
+```shell
  go get github.com/thc2cat/blink
  go install
 ```
@@ -51,7 +50,7 @@ go build, go install
 
 ## Built With
 
-* [fatih/color] http://github.com/fatih/color
+* [fatih/color : http://github.com/fatih/color](http://github.com/fatih/color)
 
 ## Contributing
 
@@ -59,7 +58,7 @@ Please read, fork and PR
 
 ## Authors
 
-* **thc2cat** - *Initial work* 
+* **thc2cat** - *Initial work*
 
 ## License (later)
 
