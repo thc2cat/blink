@@ -3,3 +3,4 @@ debug
 tests/*
 vendor/*
 .vscode/
+blink.exe
